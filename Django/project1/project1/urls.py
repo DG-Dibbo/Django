@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("",views.home),
     path("firstApp/",include("firstApp.urls")),
+    path("secondApp/",include("secondApp.urls")),
     path('contact/',views.contact)
 ]
