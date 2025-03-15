@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>About Page</h3>
+    
+    {% if name and email %}
+        <h1>Name: {{ name }}</h1>
+        <h1>Email: {{ email }}</h1>
+        <h1>Ratings: {{ select }}</h1>
+    {% else %}
+        <p>No data submitted yet.</p>
+    {% endif %}
+{% endblock content %}

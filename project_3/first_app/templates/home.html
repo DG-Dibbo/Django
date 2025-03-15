@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>This is my page</h1>
+    <h2>Author: {{ author }}</h2>
+    <h2>Age: {{ age }}</h2> 
+    <h2>List of Even: {{ lst }}</h2>
+
+    <!--Join Filter-->
+    <h1>{{ lst | join:"  " }}</h1>
+
+    <h1>
+        <!--Date Filter-->
+    {{ birthday | date:"D d M Y" }} 
+    <br>
+    {{ birthday|date:"SHORT_DATE_FORMAT" }}
+    <br>
+    {{ birthday | date }}
+    <br>
+    <!--Length Filter-->
+    {{ lst | length }}
+    <!-- Condition Statement -->
+    <br>
+    <!--Time Filter-->
+    {{ birthday | time:"H:i" }}.
+    <br>
+    <!--Truncatechars Filter-->
+    <h2>{{ sentence | truncatechars:15 }}</h2>
+    
+    </h1>
+    
+    {% if age >= 20 %}
+        <h1>You can get a driving license</h1>
+    {% elif age >= 10 and age <= 19 %}
+        <h1>You can't get a driving license</h1>
+    {% else %}
+        <h1>You are a child</h1>
+    {% endif %}
+    
+    {% for i in courses %}
+    <h1>Courses : {{i.id}} {{i.name}} {{i.fee}}</h1>
+    {% comment %} <h1>Courses Name:{{i.name}}</h1>
+    <h1>Courses Fee: {{i.fee}}</h1> {% endcomment %}
+    {% endfor %}
+</body>
+</html>
