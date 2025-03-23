@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- Hero Section -->
+<div class="container py-5 text-center">
+    <h2 class="fw-bold text-primary">🚀 Django Blog Project</h2>
+    <p class="text-muted px-md-5">
+        Django is a powerful web framework that lets you build secure and scalable web applications quickly.
+    </p>
+</div>
+
+<!-- Info Section -->
+<div class="container px-md-5 py-4">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <p class="lead">
+                Django is software you can use to develop web applications quickly and efficiently. Most web applications 
+                have several common functions, like authentication, information retrieval from a database, and cookie management.
+            </p>
+        </div>
+        <div class="col-md-6 text-center">
+            <img src="{% static 'blog.jpg' %}" alt="Django Blog" class="img-fluid rounded shadow-lg">
+        </div>
+    </div>
+</div>
+
+<!-- Blog Section -->
+<div class="container py-4">
+    <div class="row">
+        <!-- Category Filter Section -->
+        <div class="col-md-3">
+            <h5 class="fw-bold text-secondary">📌 Filter by Category</h5>
+            <div class="list-group">
+                {% for cat in category %}
+                <label class="list-group-item d-flex align-items-center">
+                    <input class="form-check-input me-2" type="radio" name="category1" id="{{ cat.id }}" value="{{ cat.id }}">
+                    <a href="{% url 'category_wise_slug' cat.slug %}" class="text-decoration-none text-dark">{{ cat.name }}</a>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Posts Section -->
+        <div class="col-md-9">
+            <h3 class="mb-3 text-primary">📝 {{ data|length }} Result(s) Found</h3>
+            <div class="row">
+                {% for post in data %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden transition">
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold text-primary">{{ post.title }}</h5>
+                            <p class="card-text text-muted">{{ post.content|truncatewords:15 }}</p>
+                            <p class="mb-2">
+                                <strong class="text-secondary">Category:</strong>
+                                {% for cat in post.category.all %}
+                                    <span class="badge bg-warning text-dark">{{ cat.name }}</span>
+                                {% endfor %}
+                            </p>
+                            <p class="text-end text-secondary small">
+                                <strong>👤 {{ post.author.get_full_name|default:post.author.username }}</strong>
+                            </p>
+                            <p class="small text-muted">📅 {{ post.created_at|date:"M d, Y H:i:s" }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'read_post' post.id %}" class="btn btn-outline-primary btn-sm rounded-pill">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted text-center">⚠️ No posts available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS for Fancy Effects -->
+<style>
+    .transition {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .transition:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+{% endblock content %}
