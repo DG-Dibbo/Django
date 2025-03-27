@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden transition post-card">
+                    <div class="card-body p-4">
+                        {% if post.image %}
+                            <img class="card-img-top img-fluid rounded shadow" src="{{ post.image.url }}" alt="{{ post.title }}">
+                        {% else %}
+                            <img class="card-img-top img-fluid rounded shadow" src="{% static 'images/default.jpg' %}" alt="No Image">
+                        {% endif %}
+
+                        <h3 class="card-title fw-bold text-primary mt-3 text-center">✨ {{ post.title }} ✨</h3>
+                        <p class="card-text text-muted text-justify">{{ post.content }}</p>
+
+                        <div class="mb-3 text-center">
+                            <strong class="text-secondary">📌 Categories:</strong>
+                            {% for cat in post.category.all %}
+                                <span class="badge bg-gradient bg-warning text-dark me-1">{{ cat.name }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <p class="text-end text-secondary small">
+                            <strong>👤 {{ post.author.get_full_name|default:post.author.username }}</strong>
+                        </p>
+                        <p class="small text-muted text-end">📅 {{ post.created_at|date:"M d, Y H:i:s" }}</p>
+
+                        <div class="d-flex justify-content-center">
+                            <a href="{% url 'read_post' post.id %}" class="btn btn-outline-primary btn-lg rounded-pill fancy-btn shadow-sm px-4 py-2">
+                                🚀 Read More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4 shadow-lg border-0 rounded-4">
+        <div class="card-body">
+            <h3 class="text-primary text-center">💬 Total Comments: {{ comments | length }}</h3>
+            <hr>
+            {% for comment in comments %}
+                <div class="p-3 mb-2 rounded bg-light shadow-sm">
+                    <p class="fw-bold text-dark">🗣 {{ comment.name }} <span class="text-muted small">({{ comment.created_on }})</span></p>
+                    <p class="text-muted">{{ comment.body }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card mt-4 shadow-lg border-0 rounded-4">
+        <div class="card-body text-center">
+            <h3 class="text-danger">📝 Add a Comment</h3>
+            <form method="post" action="" class="w-50 mx-auto" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ comment_form|crispy }}
+                <button type="submit" class="btn btn-warning btn-lg rounded-pill shadow-sm mt-3">Submit 🚀</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

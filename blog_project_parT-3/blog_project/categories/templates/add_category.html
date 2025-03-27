@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+<form method = "post" action="" style = "width:50%; margin : auto">
+    {% csrf_token %}
+    <h1 class="text-danger mt-4">This is Category page</h1>
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-warning">Submit</button>
+</form>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+# models.py
+from django.db import models
+from musician.models import Musician  # সঠিকভাবে import করা
+
+class Album(models.Model):
+    album_name = models.CharField(max_length=100)
+    musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
+    release_date = models.DateField()
+    rating = models.IntegerField(choices=[(1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5')])
+    
+    def __str__(self):
+        return f"{self.album_name} by {self.musician.first_name} {self.musician.last_name}"
+
+# forms.py
+from django import forms
+from .models import Album
+
+class AlbumForm(forms.ModelForm):
+    class Meta:
+        model = Album
+        fields = ['album_name', 'musician', 'release_date', 'rating']
+        widgets = {
+            'release_date': forms.DateInput(attrs={'type': 'date'})
+        }
+
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Album
+from .forms import AlbumForm
+
+def album_list(request):
+    albums = Album.objects.all()
+    return render(request, 'album_list.html', {'albums': albums})
+
+def album_form(request, id=None):
+    album = get_object_or_404(Album, pk=id) if id else None
+    form = AlbumForm(instance=album)
+    
+    if request.method == 'POST':
+        form = AlbumForm(request.POST, instance=album)
+        if form.is_valid():
+            form.save()
+            return redirect('album_list')
+    
+    return render(request, 'album_form.html', {'form': form})
+
+def album_delete(request, id):
+    album = get_object_or_404(Album, pk=id)
+    if request.method == 'POST':
+        album.delete()
+        return redirect('album_list')
+    return render(request, 'confirm_delete.html', {'album': album})
+
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.album_list, name='album_list'),
+    path('form/', views.album_form, name='album_form'),
+    path('form/<int:id>/', views.album_form, name='album_edit'),
+    path('delete/<int:id>/', views.album_delete, name='album_delete'),
+]
+
+# album_form.html
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center text-primary">Album Form</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+# confirm_delete.html
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card p-4">
+        <h3>Are you sure you want to delete "{{ album.album_name }}"?</h3>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'album_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
